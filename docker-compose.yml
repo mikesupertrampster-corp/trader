@@ -12,11 +12,11 @@ services:
       - ./data/simplejson:/data
     ports:
       - 8000:8000
-  grabber:
+  feeder:
     depends_on:
       - simplejson
-    build: grabber
-    container_name: grabber
+    build: feeder
+    container_name: feeder
     restart: unless-stopped
     environment:
       ALPHAVANTAGE_APIKEY: ${ALPHAVANTAGE_APIKEY}
