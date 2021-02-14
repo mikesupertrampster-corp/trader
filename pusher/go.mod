@@ -1,4 +1,4 @@
-module github.com/mikesupertrampster/trader/grabber
+module github.com/mikesupertrampster/trader/pusher
 
 go 1.15
 

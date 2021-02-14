@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/mikesupertrampster/trader/grabber/pkg/exporter"
-	"github.com/mikesupertrampster/trader/grabber/pkg/services/alphavantage"
+	"github.com/mikesupertrampster/trader/feeder/pkg/exporter"
+	"github.com/mikesupertrampster/trader/feeder/pkg/services/alphavantage"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/vrischmann/envconfig"
@@ -46,9 +46,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	symbols := symbols(config)
-
-	collect(config, symbols)
+	collect(config, symbols(config))
 }
 
 func symbols(config *cfg) []string {
