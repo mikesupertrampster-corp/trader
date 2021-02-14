@@ -1,15 +1,15 @@
 global:
-  scrape_interval:     30s
-  evaluation_interval: 30s
+  scrape_interval:     60s
+  evaluation_interval: 60s
 
 alerting:
   alertmanagers:
-  - static_configs:
-    - targets:
+    - static_configs:
+      - targets:
 
 rule_files:
 
 scrape_configs:
   - job_name: stock_price
     static_configs:
-    - targets: ['exporter:8080']
+      - targets: ['grabber:8080']
