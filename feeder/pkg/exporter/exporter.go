@@ -1,7 +1,7 @@
 package exporter
 
 import (
-	"github.com/mikesupertrampster/trader/feeder/pkg/services/alphavantage"
+	"github.com/mikesupertrampster/trader/apis/services/alphavantage"
 	"github.com/prometheus/client_golang/prometheus"
 	"strconv"
 )
