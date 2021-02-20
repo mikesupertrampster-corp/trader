@@ -1,6 +1,6 @@
 global:
-  scrape_interval:     60s
-  evaluation_interval: 60s
+  scrape_interval:     86400s
+  evaluation_interval: 86400s
 
 alerting:
   alertmanagers:
@@ -10,6 +10,6 @@ alerting:
 rule_files:
 
 scrape_configs:
-  - job_name: stock_price
+  - job_name: stock_feed
     static_configs:
-      - targets: ['grabber:8080']
+      - targets: ['feeder:8080']
