@@ -2,6 +2,7 @@ package alphavantage
 
 import (
 	"encoding/json"
+	"github.com/mitchellh/mapstructure"
 	"log"
 	"net/http"
 	"net/url"
@@ -17,12 +18,22 @@ type Intra struct {
 	TimeSeries map[string]*Entry `json:"Time Series (5min)"`
 }
 
-func (c *Client) GetIntra(symbol string, size string) (Daily, error) {
-	return c.get(Daily{},"TIME_SERIES_INTRADAY", symbol, map[string]string{"outputsize": size}).(Daily), nil
+func (c *Client) GetIntra(symbol string, size string) (Intra, error) {
+	var data Intra
+	err := mapstructure.Decode(c.get(data,"TIME_SERIES_INTRADAY", symbol, map[string]string{"outputsize": size}), &data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
 }
 
 func (c *Client) GetDaily(symbol string, size string) (Daily, error) {
-	return c.get(Daily{},"TIME_SERIES_DAILY", symbol, map[string]string{"outputsize": size}).(Daily), nil
+	var data Daily
+	err := mapstructure.Decode(c.get(data,"TIME_SERIES_DAILY", symbol, map[string]string{"outputsize": size}), &data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
 }
 
 func (c *Client) get(iface interface{}, function string, symbol string, opts map[string]string) interface{} {
