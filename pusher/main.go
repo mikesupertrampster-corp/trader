@@ -5,13 +5,17 @@ import (
 	"github.com/mikesupertrampster/trader/apis/services/alphavantage"
 	"github.com/vrischmann/envconfig"
 	"log"
-	"reflect"
-	"strings"
-	"time"
 )
 
 type pusher struct {
-	client client.Client
+	av       alphavantage.Client
+	client   client.Client
+	database database
+}
+
+type database struct {
+	name      string
+	precision string
 }
 
 type cfg struct {
@@ -28,7 +32,7 @@ type cfg struct {
 	}
 
 	AlphaVantage struct {
-		ApiKey string `envconfig:"default=KEY"`
+		ApiKey string `envconfig:"default=demo"`
 	}
 }
 
@@ -45,71 +49,18 @@ func main() {
 			log.Fatal(err)
 		}
 	}(c)
-	p := pusher{client: c}
 
-	av := alphavantage.New("demo")
-	daily, err := av.GetDaily("IBM")
-	if err != nil {
-		log.Fatal(err)
+	av := alphavantage.New(config.AlphaVantage.ApiKey)
+	p := pusher{
+		av:     av,
+		client: c,
+		database: database{
+			name:      config.InfluxDB.Database.Name,
+			precision: config.InfluxDB.Database.Precision,
+		},
 	}
 
-	bp, err := client.NewBatchPoints(client.BatchPointsConfig{
-		Database:  config.InfluxDB.Database.Name,
-		Precision: config.InfluxDB.Database.Precision,
-	})
-	if err != nil {
-		log.Fatalf("errhere : %v",err)
+	for _, symbol := range []string{"IBM"} {
+		p.PushIntra(symbol, "5min", "full")
 	}
-
-	p.push(daily, bp)
-}
-
-func (p *pusher) push(daily alphavantage.Daily, bp client.BatchPoints) {
-	for date, entry := range daily.TimeSeries {
-		t, err := time.Parse("2006-01-02", date)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		pt, err := client.NewPoint(
-			"price",
-			map[string]string{
-				"symbol": daily.MetaData.Symbol,
-			},
-			toIf(*entry),
-			t)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		bp.AddPoint(pt)
-	}
-
-	if err := p.client.Write(bp); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func influxDBClient(addr string, username string, password string) client.Client {
-	c, err := client.NewHTTPClient(client.HTTPConfig{
-		Addr:     addr,
-		Username: username,
-		Password: password,
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return c
-}
-
-func toIf(entry alphavantage.Entry) map[string]interface{} {
-	in := make(map[string]interface{})
-
-	v := reflect.ValueOf(entry)
-	for i := 0; i < v.NumField(); i++ {
-		in[strings.ToLower(v.Type().Field(i).Name)] = v.Field(i)
-	}
-
-	return in
 }
