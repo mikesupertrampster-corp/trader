@@ -2,7 +2,6 @@ package alphavantage
 
 import (
 	"encoding/json"
-	"github.com/mitchellh/mapstructure"
 	"log"
 	"net/http"
 	"net/url"
@@ -20,23 +19,34 @@ type Intra struct {
 
 func (c *Client) GetIntra(symbol string, size string) (Intra, error) {
 	var data Intra
-	err := mapstructure.Decode(c.get(data,"TIME_SERIES_INTRADAY", symbol, map[string]string{"outputsize": size}), &data)
+	err := json.Unmarshal(c.get(data,"TIME_SERIES_INTRADAY", "IBM", nil), &data)
 	if err != nil {
 		return data, err
 	}
+
 	return data, nil
 }
 
 func (c *Client) GetDaily(symbol string, size string) (Daily, error) {
 	var data Daily
-	err := mapstructure.Decode(c.get(data,"TIME_SERIES_DAILY", symbol, map[string]string{"outputsize": size}), &data)
+	err := json.Unmarshal(c.get(data,"TIME_SERIES_DAILY", "IBM", nil), &data)
 	if err != nil {
 		return data, err
 	}
+
 	return data, nil
 }
 
-func (c *Client) get(iface interface{}, function string, symbol string, opts map[string]string) interface{} {
+func (c *Client) get(i interface{}, function string, symbol string, opts map[string]string) []byte {
+	var data interface{}
+
+	switch i.(type) {
+	case Daily:
+		data = Daily{}
+	case Intra:
+		data = Intra{}
+	}
+
 	parameters := url.Values{}
 	parameters.Add("function", function)
 	parameters.Add("symbol", symbol)
@@ -57,10 +67,15 @@ func (c *Client) get(iface interface{}, function string, symbol string, opts map
 		log.Fatal(err)
 	}
 
-	err = json.NewDecoder(res.Body).Decode(&iface)
+	err = json.NewDecoder(res.Body).Decode(&data)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return iface
+	result, err := json.Marshal(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return result
 }
