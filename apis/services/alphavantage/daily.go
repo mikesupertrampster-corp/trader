@@ -30,9 +30,13 @@ type Intra struct {
 	TimeSeries map[string]*Entry `json:"Time Series (5min)"`
 }
 
-func (c *Client) GetIntra(symbol string, size string) (Intra, error) {
+func (c *Client) GetIntra(symbol string, interval string, size string) (Intra, error) {
 	var data Intra
-	err := json.Unmarshal(c.get(data, "TIME_SERIES_INTRADAY", symbol, nil), &data)
+	opts := map[string]string{
+		"interval":   interval,
+		"outputsize": size,
+	}
+	err := json.Unmarshal(c.get(data, "TIME_SERIES_INTRADAY", symbol, opts), &data)
 	if err != nil {
 		return data, err
 	}
@@ -42,7 +46,7 @@ func (c *Client) GetIntra(symbol string, size string) (Intra, error) {
 
 func (c *Client) GetDaily(symbol string, size string) (Daily, error) {
 	var data Daily
-	err := json.Unmarshal(c.get(data, "TIME_SERIES_DAILY", symbol, nil), &data)
+	err := json.Unmarshal(c.get(data, "TIME_SERIES_DAILY", symbol, map[string]string{"outputsize": size}), &data)
 	if err != nil {
 		return data, err
 	}
