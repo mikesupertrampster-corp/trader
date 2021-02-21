@@ -7,19 +7,32 @@ import (
 	"net/url"
 )
 
-type Daily struct{
-	MetaData   MetaData `json:"Meta Data"`
+type MetaData struct {
+	Symbol string `json:"2. Symbol"`
+	Last   string `json:"3. Last Refreshed"`
+}
+
+type Entry struct {
+	Open   float64 `json:"1. open,string"`
+	High   float64 `json:"2. high,string"`
+	Low    float64 `json:"3. low,string"`
+	Close  float64 `json:"4. close,string"`
+	Volume float64 `json:"5. volume,string"`
+}
+
+type Daily struct {
+	MetaData   MetaData          `json:"Meta Data"`
 	TimeSeries map[string]*Entry `json:"Time Series (Daily)"`
 }
 
 type Intra struct {
-	MetaData   MetaData `json:"Meta Data"`
+	MetaData   MetaData          `json:"Meta Data"`
 	TimeSeries map[string]*Entry `json:"Time Series (5min)"`
 }
 
 func (c *Client) GetIntra(symbol string, size string) (Intra, error) {
 	var data Intra
-	err := json.Unmarshal(c.get(data,"TIME_SERIES_INTRADAY", "IBM", nil), &data)
+	err := json.Unmarshal(c.get(data, "TIME_SERIES_INTRADAY", symbol, nil), &data)
 	if err != nil {
 		return data, err
 	}
@@ -29,7 +42,7 @@ func (c *Client) GetIntra(symbol string, size string) (Intra, error) {
 
 func (c *Client) GetDaily(symbol string, size string) (Daily, error) {
 	var data Daily
-	err := json.Unmarshal(c.get(data,"TIME_SERIES_DAILY", "IBM", nil), &data)
+	err := json.Unmarshal(c.get(data, "TIME_SERIES_DAILY", symbol, nil), &data)
 	if err != nil {
 		return data, err
 	}
