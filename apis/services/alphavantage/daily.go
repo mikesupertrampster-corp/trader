@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"reflect"
 )
 
 type MetaData struct {
@@ -55,15 +56,6 @@ func (c *Client) GetDaily(symbol string, size string) (Daily, error) {
 }
 
 func (c *Client) get(i interface{}, function string, symbol string, opts map[string]string) []byte {
-	var data interface{}
-
-	switch i.(type) {
-	case Daily:
-		data = Daily{}
-	case Intra:
-		data = Intra{}
-	}
-
 	parameters := url.Values{}
 	parameters.Add("function", function)
 	parameters.Add("symbol", symbol)
@@ -84,6 +76,7 @@ func (c *Client) get(i interface{}, function string, symbol string, opts map[str
 		log.Fatal(err)
 	}
 
+	data := reflect.Indirect(reflect.ValueOf(i)).Interface()
 	err = json.NewDecoder(res.Body).Decode(&data)
 	if err != nil {
 		log.Fatal(err)
