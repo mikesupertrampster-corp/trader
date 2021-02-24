@@ -57,9 +57,9 @@ type Sheet struct {
 }
 
 type BalanceSheet struct {
-	Symbol           string    `json:"symbol"`
-	AnnualReports    []Reports `json:"annualReports"`
-	QuarterlyReports []Reports `json:"quarterlyReports"`
+	Symbol           string  `json:"symbol"`
+	AnnualReports    []Sheet `json:"annualReports"`
+	QuarterlyReports []Sheet `json:"quarterlyReports"`
 }
 
 func (c *Client) GetBalanceSheet(symbol string) (BalanceSheet, error) {

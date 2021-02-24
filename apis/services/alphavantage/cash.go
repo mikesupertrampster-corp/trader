@@ -30,9 +30,9 @@ type Flow struct {
 }
 
 type CashFlow struct {
-	Symbol           string    `json:"symbol"`
-	AnnualReports    []Reports `json:"annualReports"`
-	QuarterlyReports []Reports `json:"quarterlyReports"`
+	Symbol           string `json:"symbol"`
+	AnnualReports    []Flow `json:"annualReports"`
+	QuarterlyReports []Flow `json:"quarterlyReports"`
 }
 
 func (c *Client) CashFlow(symbol string) (CashFlow, error) {
