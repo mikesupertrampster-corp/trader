@@ -42,7 +42,13 @@ type IncomeStatement struct {
 
 func (c *Client) GetIncomeStatement(symbol string) (IncomeStatement, error) {
 	var data IncomeStatement
-	err := json.Unmarshal(c.get(data, "INCOME_STATEMENT", symbol, nil), &data)
+
+	series, err := c.get(data, "INCOME_STATEMENT", symbol, nil)
+	if err != nil {
+		return data, err
+	}
+
+	err = json.Unmarshal(series, &data)
 	if err != nil {
 		return data, err
 	}

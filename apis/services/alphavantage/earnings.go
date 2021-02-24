@@ -20,7 +20,13 @@ type Earnings struct {
 
 func (c *Client) GetEarnings(symbol string) (Earnings, error) {
 	var data Earnings
-	err := json.Unmarshal(c.get(data, "EARNINGS", symbol, nil), &data)
+
+	series, err := c.get(data, "EARNINGS", symbol, nil)
+	if err != nil {
+		return data, err
+	}
+
+	err = json.Unmarshal(series, &data)
 	if err != nil {
 		return data, err
 	}

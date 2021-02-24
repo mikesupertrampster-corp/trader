@@ -13,10 +13,10 @@ type CompanyOverview struct {
 	Sector                     string  `json:"Sector"`
 	Industry                   string  `json:"Industry"`
 	Address                    string  `json:"Address"`
-	FullTimeEmployees          string  `json:"FullTimeEmployees"`
+	FullTimeEmployees          int     `json:"FullTimeEmployees,string"`
 	FiscalYearEnd              string  `json:"FiscalYearEnd"`
 	LatestQuarter              string  `json:"LatestQuarter"`
-	MarketCapitalization       float64 `json:"MarketCapitalization,string"`
+	MarketCapitalization       int64   `json:"MarketCapitalization,string"`
 	EBITDA                     int64   `json:"EBITDA,string"`
 	PERatio                    float64 `json:"PERatio,string"`
 	PEGRatio                   float64 `json:"PEGRatio,string"`
@@ -66,7 +66,13 @@ type CompanyOverview struct {
 
 func (c *Client) GetCompanyOverview(symbol string) (CompanyOverview, error) {
 	var data CompanyOverview
-	err := json.Unmarshal(c.get(data, "OVERVIEW", symbol, nil), &data)
+
+	series, err := c.get(data, "OVERVIEW", symbol, nil)
+	if err != nil {
+		return data, err
+	}
+
+	err = json.Unmarshal(series, &data)
 	if err != nil {
 		return data, err
 	}

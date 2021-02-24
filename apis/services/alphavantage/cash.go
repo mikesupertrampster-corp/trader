@@ -37,7 +37,13 @@ type CashFlow struct {
 
 func (c *Client) CashFlow(symbol string) (CashFlow, error) {
 	var data CashFlow
-	err := json.Unmarshal(c.get(data, "CASH_FLOW", symbol, nil), &data)
+
+	series, err := c.get(data, "CASH_FLOW", symbol, nil)
+	if err != nil {
+		return data, err
+	}
+
+	err = json.Unmarshal(series, &data)
 	if err != nil {
 		return data, err
 	}

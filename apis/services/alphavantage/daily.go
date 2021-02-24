@@ -2,7 +2,6 @@ package alphavantage
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -37,7 +36,13 @@ func (c *Client) GetIntra(symbol string, interval string, size string) (Intra, e
 		"interval":   interval,
 		"outputsize": size,
 	}
-	err := json.Unmarshal(c.get(data, "TIME_SERIES_INTRADAY", symbol, opts), &data)
+
+	series, err := c.get(data, "TIME_SERIES_INTRADAY", symbol, opts)
+	if err != nil {
+		return data, err
+	}
+
+	err = json.Unmarshal(series, &data)
 	if err != nil {
 		return data, err
 	}
@@ -47,7 +52,13 @@ func (c *Client) GetIntra(symbol string, interval string, size string) (Intra, e
 
 func (c *Client) GetDaily(symbol string, size string) (Daily, error) {
 	var data Daily
-	err := json.Unmarshal(c.get(data, "TIME_SERIES_DAILY", symbol, map[string]string{"outputsize": size}), &data)
+
+	series, err := c.get(data, "TIME_SERIES_DAILY", symbol, map[string]string{"outputsize": size})
+	if err != nil {
+		return data, err
+	}
+
+	err = json.Unmarshal(series, &data)
 	if err != nil {
 		return data, err
 	}
@@ -55,7 +66,7 @@ func (c *Client) GetDaily(symbol string, size string) (Daily, error) {
 	return data, nil
 }
 
-func (c *Client) get(i interface{}, function string, symbol string, opts map[string]string) []byte {
+func (c *Client) get(i interface{}, function string, symbol string, opts map[string]string) ([]byte, error) {
 	parameters := url.Values{}
 	parameters.Add("function", function)
 	parameters.Add("symbol", symbol)
@@ -68,24 +79,24 @@ func (c *Client) get(i interface{}, function string, symbol string, opts map[str
 
 	req, err := http.NewRequest(http.MethodGet, c.BaseUrl.String(), nil)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	data := reflect.Indirect(reflect.ValueOf(i)).Interface()
 	err = json.NewDecoder(res.Body).Decode(&data)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	result, err := json.Marshal(data)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return result
+	return result, nil
 }
