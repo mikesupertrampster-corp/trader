@@ -3,8 +3,8 @@ package alphavantage
 import "encoding/json"
 
 type Earnings struct {
-	AnnualReports    []Report `json:"annualEarnings"`
-	QuarterlyReports []Report `json:"quarterlyEarnings"`
+	AnnualReports    Report `json:"annualEarnings"`
+	QuarterlyReports Report `json:"quarterlyEarnings"`
 }
 
 func (c *Client) GetEarnings(symbol string) (Earnings, error) {

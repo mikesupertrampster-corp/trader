@@ -77,7 +77,9 @@ func (c *Client) get(i interface{}, function string, symbol string, opts map[str
 	return result, nil
 }
 
-type Report struct {
+type Report []ReportFields
+
+type ReportFields struct {
 	AccountsPayable                   int64   `json:"accountsPayable,string"`
 	AccumulatedAmortization           string  `json:"accumulatedAmortization"`
 	AccumulatedDepreciation           int64   `json:"accumulatedDepreciation,string"`
