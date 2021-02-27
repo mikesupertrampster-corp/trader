@@ -18,12 +18,12 @@ type Entry struct {
 }
 
 type Daily struct {
-	MetaData   MetaData          `json:"Meta Data"`
+	MetaData   MetaData          `json:"Meta AVData"`
 	TimeSeries map[string]*Entry `json:"Time Series (Daily)"`
 }
 
 type Intra struct {
-	MetaData   MetaData          `json:"Meta Data"`
+	MetaData   MetaData          `json:"Meta AVData"`
 	TimeSeries map[string]*Entry `json:"Time Series (5min)"`
 }
 
