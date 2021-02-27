@@ -18,47 +18,51 @@ type Entry struct {
 }
 
 type Daily struct {
-	MetaData   MetaData          `json:"Meta AVData"`
-	TimeSeries map[string]*Entry `json:"Time Series (Daily)"`
+	Price    map[string]*Entry `json:"Time Series (Daily)"`
 }
 
 type Intra struct {
-	MetaData   MetaData          `json:"Meta AVData"`
-	TimeSeries map[string]*Entry `json:"Time Series (5min)"`
+	Price    map[string]*Entry `json:"Time Series (5min)"`
 }
 
-func (c *Client) GetIntra(symbol string, interval string, size string) (Intra, error) {
+func (c *Client) GetIntra(symbol string, interval string, size string) (Series, error) {
 	var data Intra
 	opts := map[string]string{
 		"interval":   interval,
 		"outputsize": size,
 	}
+	var series Series
 
-	series, err := c.get(data, "TIME_SERIES_INTRADAY", symbol, opts)
+	response, err := c.get(data, "TIME_SERIES_INTRADAY", symbol, opts)
 	if err != nil {
-		return data, err
+		log.Fatal("Failed to get intra day prices: ", err)
+		return series, err
 	}
 
-	err = json.Unmarshal(series, &data)
+	err = json.Unmarshal(response, &data)
 	if err != nil {
-		return data, err
+		log.Fatal("Failed to get unmarshall intra day price: ", err)
+		return series, err
 	}
 
-	return data, nil
+	return c.extract(data, "2006-01-02 15:04:05")
 }
 
-func (c *Client) GetDaily(symbol string, size string) (Daily, error) {
+func (c *Client) GetDaily(symbol string, size string) (Series, error) {
 	var data Daily
+	var series Series
 
-	series, err := c.get(data, "TIME_SERIES_DAILY", symbol, map[string]string{"outputsize": size})
+	response, err := c.get(data, "TIME_SERIES_DAILY", symbol, map[string]string{"outputsize": size})
 	if err != nil {
-		return data, err
+		log.Fatal("Failed to get daily prices: ", err)
+		return series, err
 	}
 
-	err = json.Unmarshal(series, &data)
+	err = json.Unmarshal(response, &data)
 	if err != nil {
-		return data, err
+		log.Fatal("Failed to get unmarshall daily price: ", err)
+		return series, err
 	}
 
-	return data, nil
+	return c.extract(data, "2006-01-02")
 }

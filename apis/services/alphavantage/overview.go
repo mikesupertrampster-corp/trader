@@ -1,6 +1,9 @@
 package alphavantage
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"time"
+)
 
 type CompanyOverview struct {
 	Symbol                     string  `json:"Symbol"`
@@ -64,18 +67,33 @@ type CompanyOverview struct {
 	LastSplitDate              string  `json:"LastSplitDate"`
 }
 
-func (c *Client) GetCompanyOverview(symbol string) (CompanyOverview, error) {
+func (c *Client) GetCompanyOverview(symbol string) (Series, error) {
 	var data CompanyOverview
+	var series Series
 
-	series, err := c.get(data, "OVERVIEW", symbol, nil)
+	response, err := c.get(data, "OVERVIEW", symbol, nil)
 	if err != nil {
-		return data, err
+		log.Fatal("Failed to get company overview: ", err)
+		return series, err
 	}
 
-	err = json.Unmarshal(series, &data)
+	err = json.Unmarshal(response, &data)
 	if err != nil {
-		return data, err
+		log.Fatal("Failed to get unmarshall company overview: ", err)
+		return series, err
 	}
 
-	return data, nil
+	timestamp, err := time.Parse("2006-01-02", data.LatestQuarter)
+	if err != nil {
+		log.Fatal("Failed to parse timestamp: ", err)
+		return series, err
+	}
+
+	series = append(series, DataPoint{
+		"overview",
+		c.toIf(data),
+		timestamp,
+	})
+
+	return series, nil
 }
