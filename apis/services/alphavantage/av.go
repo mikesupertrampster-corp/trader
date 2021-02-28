@@ -110,7 +110,7 @@ func (c *Client) extract(data interface{}, timeLayout string) (Series, error) {
 
 				series = append(series, DataPoint{
 					fmt.Sprintf("%s_%s", fundamental, name),
-					c.toIf(report),
+					c.toIf(report.Interface()),
 					timestamp,
 				})
 			}
@@ -126,7 +126,7 @@ func (c *Client) extract(data interface{}, timeLayout string) (Series, error) {
 
 				series = append(series, DataPoint{
 					fmt.Sprintf("%s_%s", fundamental, name),
-					c.toIf(report.Interface()),
+					c.toIf(report.Elem().Interface()),
 					timestamp,
 				})
 			}
