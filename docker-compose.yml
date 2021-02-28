@@ -35,7 +35,7 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_INSTALL_PLUGINS=grafana-simple-json-datasource
+      - GF_INSTALL_PLUGINS=grafana-simple-json-datasource,clarity89-finnhub-datasource
     ports:
       - 3000:3000
   influxdb:
@@ -50,15 +50,15 @@ services:
       - ./data/influxdb:/var/lib/influxdb
     ports:
       - 8086:8086
-  feeder:
-    depends_on:
-      - simplejson
-    build: feeder
-    container_name: feeder
-    restart: unless-stopped
-    environment:
-      ALPHAVANTAGE_APIKEY: ${ALPHAVANTAGE_APIKEY}
-      PORT: 8080
-      SYMBOLS_API_URL: http://simplejson:8000
-    ports:
-      - 8080:8080
+#  feeder:
+#    depends_on:
+#      - simplejson
+#    build: feeder
+#    container_name: feeder
+#    restart: unless-stopped
+#    environment:
+#      ALPHAVANTAGE_APIKEY: ${ALPHAVANTAGE_APIKEY}
+#      PORT: 8080
+#      SYMBOLS_API_URL: http://simplejson:8000
+#    ports:
+#      - 8080:8080

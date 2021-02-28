@@ -1,1 +1,4 @@
 .idea
+data/influxdb
+data/prometheus
+data/grafana/plugins
