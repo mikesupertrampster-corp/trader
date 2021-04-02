@@ -1,4 +1,8 @@
-# Trader
+# Algo Trader
+
+
+[![Docker](https://github.com/mikesupertrampster/algo-trader/actions/workflows/docker.yml/badge.svg)](https://github.com/mikesupertrampster/algo-trader/actions/workflows/docker.yml)
+[![Gitleaks](https://github.com/mikesupertrampster/algo-trader/actions/workflows/gitleaks.yml/badge.svg)](https://github.com/mikesupertrampster/algo-trader/actions/workflows/gitleaks.yml)
 
 ### Prerequisite
 
