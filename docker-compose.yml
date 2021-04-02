@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   simplejson:
-    build: simplejson
+    image: ghcr.io/mikesupertrampster/simple-json-server:v1.0.1
     container_name: simplejson
     restart: unless-stopped
     environment:
@@ -50,15 +50,15 @@ services:
       - ./data/influxdb:/var/lib/influxdb
     ports:
       - 8086:8086
-#  feeder:
-#    depends_on:
-#      - simplejson
-#    build: feeder
-#    container_name: feeder
-#    restart: unless-stopped
-#    environment:
-#      ALPHAVANTAGE_APIKEY: ${ALPHAVANTAGE_APIKEY}
-#      PORT: 8080
-#      SYMBOLS_API_URL: http://simplejson:8000
-#    ports:
-#      - 8080:8080
+  feeder:
+    depends_on:
+      - simplejson
+    image: ghcr.io/mikesupertrampster/algo-feeder:v1.0.1
+    container_name: feeder
+    restart: unless-stopped
+    environment:
+      ALPHAVANTAGE_APIKEY: ${ALPHAVANTAGE_APIKEY}
+      PORT: 8080
+      SYMBOLS_API_URL: http://simplejson:8000
+    ports:
+      - 8080:8080
